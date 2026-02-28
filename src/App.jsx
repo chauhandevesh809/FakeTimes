@@ -120,7 +120,7 @@ export default function App() {
             </section>
             <footer className="article-footer">
               <button onClick={shareNewspaper} className="share-btn" disabled={isSharing}>
-                {isSharing ? '📸 Sharing...' : '📱 Share Newspaper'}
+                {isSharing ? ' Sharing...' : ' Share Newspaper'}
               </button>
             </footer>
           </article>
