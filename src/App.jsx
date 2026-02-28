@@ -37,31 +37,40 @@ export default function App() {
         backgroundColor: '#ebe7e7',
         scale: 2,
         useCORS: true,
-        allowTaint: true,
-        logging: false
+        allowTaint: false,
+        logging: false,
+        onclone: (doc) => {
+          doc.querySelectorAll('.article-image img, .img').forEach(img => {
+            img.style.filter = 'grayscale(100%) contrast(160%) brightness(95%) sepia(10%)';
+          });
+        }
       });
+
+      const ctx = canvas.getContext('2d');
+      ctx.filter = 'grayscale(100%) contrast(160%) brightness(95%) sepia(10%)';
+      ctx.drawImage(canvas, 0, 0);
 
       canvas.toBlob(async (blob) => {
         const newspaperFile = new File([blob], 'FakeTimes.png', { type: 'image/png' });
-        
+
         if (navigator.share && navigator.canShare({ files: [newspaperFile] })) {
           try {
             await navigator.share({
               title: `${title || "FakeTimes"}`,
-              text: `I made this epic newspaper!\nCreate yours:`,
+              text: `I made this epic fake newspaper using FakeTimes!\nCreate yours:`,
               files: [newspaperFile],
-              url: window.location.href  
+              url: window.location.href
             });
           } catch (shareError) {
             alert("Not able to share currently");
           }
         } else {
-        alert("Not able to share currently");        }
+          alert("Not able to share currently");
+        }
       }, 'image/png', 0.95);
 
     } catch (error) {
       console.error('Share failed:', error);
-      handleFallbackShare(null);
     } finally {
       setIsSharing(false);
       if (document.querySelector('.article-footer')) {
@@ -69,8 +78,6 @@ export default function App() {
       }
     }
   }, [isSharing, title]);
-
-  
 
   useEffect(() => {
     return () => {
@@ -103,28 +110,26 @@ export default function App() {
       </div>
 
       <div className="preview-panel">
-        {(
-          <article ref={articleRef} className="article-preview">
-            <header className="article-header">
-              <h1 className="newspaper-title"><img src="./Titleimg.png" className="img"/> FakeTimes <img src="./Titleimg.png" className="img"/></h1>
-              <p className="newspaper-tagline">All the news that never happened</p>
-            </header>
-            <h2 className="article-headline">{title || "Your Headline Here"}</h2>
-            {image && (
-              <figure className="article-image">
-                <img src={image} alt="news" />
-              </figure>
-            )}
-            <section className="article-content">
-              {content || "Start typing your article..."}
-            </section>
-            <footer className="article-footer">
-              <button onClick={shareNewspaper} className="share-btn" disabled={isSharing}>
-                {isSharing ? ' Sharing...' : ' Share Newspaper'}
-              </button>
-            </footer>
-          </article>
-        )}
+        <article ref={articleRef} className="article-preview">
+          <header className="article-header">
+            <h1 className="newspaper-title"><img src="./Titleimg.png" className="img" /> FakeTimes <img src="./Titleimg.png" className="img" /></h1>
+            <p className="newspaper-tagline">All the news that never happened</p>
+          </header>
+          <h2 className="article-headline">{title || "Your Headline Here"}</h2>
+          {image && (
+            <figure className="article-image">
+              <img src={image} alt="news" />
+            </figure>
+          )}
+          <section className="article-content">
+            {content || "Start typing your article..."}
+          </section>
+          <footer className="article-footer">
+            <button onClick={shareNewspaper} className="share-btn" disabled={isSharing}>
+              {isSharing ? 'Sharing...' : 'Share Newspaper'}
+            </button>
+          </footer>
+        </article>
       </div>
     </div>
   );
