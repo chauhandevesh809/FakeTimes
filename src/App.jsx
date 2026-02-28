@@ -30,7 +30,6 @@ export default function App() {
 
     try {
       const footer = document.querySelector('.article-footer');
-      const wasVisible = footer?.style.display;
       if (footer) footer.style.display = 'none';
 
       const canvas = await html2canvas(articleRef.current, {
@@ -38,26 +37,25 @@ export default function App() {
         scale: 2,
         useCORS: true,
         allowTaint: false,
-        logging: false,
-        onclone: (doc) => {
-          doc.querySelectorAll('.article-image img, .img').forEach(img => {
-            img.style.filter = 'grayscale(100%) contrast(160%) brightness(95%) sepia(10%)';
-          });
-        }
+        logging: false
       });
 
-      const ctx = canvas.getContext('2d');
+      const grayscaleCanvas = document.createElement('canvas');
+      const ctx = grayscaleCanvas.getContext('2d');
+      grayscaleCanvas.width = canvas.width;
+      grayscaleCanvas.height = canvas.height;
+      
       ctx.filter = 'grayscale(100%) contrast(160%) brightness(95%) sepia(10%)';
       ctx.drawImage(canvas, 0, 0);
 
-      canvas.toBlob(async (blob) => {
+      grayscaleCanvas.toBlob(async (blob) => {
         const newspaperFile = new File([blob], 'FakeTimes.png', { type: 'image/png' });
 
         if (navigator.share && navigator.canShare({ files: [newspaperFile] })) {
           try {
             await navigator.share({
               title: `${title || "FakeTimes"}`,
-              text: `I made this epic fake newspaper using FakeTimes!\nCreate yours:`,
+              text: `I made this epic newspaper!\nCreate yours:`,
               files: [newspaperFile],
               url: window.location.href
             });
