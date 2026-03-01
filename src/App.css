@@ -163,6 +163,10 @@
   font-size: 1.1rem;
   line-height: 1.6;
   font-weight: 400;
+  text-wrap: pretty;        
+  overflow-wrap: break-word; 
+  hyphens: auto;           
+  word-break: break-word;
 }
 
 .article-footer {
